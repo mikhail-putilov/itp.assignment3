@@ -31,22 +31,25 @@ public class PrettyPrinter {
     }
 
     private void add(Document doc, Node parent, Expression expression) {
+        if (expression == null) return;
         Element element;
-        if (expression instanceof Operator) {
-            element = doc.createElement(encodeOperator(expression));
-        } else {
-            element = doc.createElement("operand");
-            element.setAttribute("value", expression.getRepresentative());
-        }
-        parent.appendChild(element);
-        for (Expression child : expression.getChildren()) {
-            add(doc, element, child);
+        if (expression instanceof Logical) {
+            Logical logicalExpression = (Logical) expression;
+            element = doc.createElement(logicalExpression.opCode.name());
+            parent.appendChild(element);
+            add(doc, element, logicalExpression.left);
+            add(doc, element, logicalExpression.right);
+        } else if (expression instanceof Relation) {
+            Relation relationExpression = (Relation) expression;
+            element = doc.createElement(relationExpression.opCode.name());
+            parent.appendChild(element);
+            add(doc, element, relationExpression.left);
+            add(doc, element, relationExpression.right);
         }
     }
 
-    private String encodeOperator(Expression expression) {
-        String representative = expression.getRepresentative();
-        switch (representative) {
+    private String encodeOperator(String expression) {
+        switch (expression) {
             case "+":
                 return "plus";
             case "-":
