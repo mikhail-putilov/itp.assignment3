@@ -1,6 +1,7 @@
 package ru.innopolis.mputilov;
 
 import ru.innopolis.mputilov.expression.*;
+import ru.innopolis.mputilov.expression.Integer;
 
 import java.util.Scanner;
 
@@ -19,7 +20,7 @@ public class Parser {
     }
 
     public static void main(String[] args) {
-        String rawExpression = "1+1";
+        String rawExpression = "1 + 2 * 3";
         Expression expression = new Parser(rawExpression).parse();
         new PrettyPrinter().print(expression);
     }
@@ -76,15 +77,57 @@ public class Parser {
 
     private Term.OpCode parseTermOperator() {
         if (scanner.hasNext("\\+")) {
+            scanner.next("\\+");
             return Term.OpCode.PLUS;
         }
         if (scanner.hasNext("\\-")) {
+            scanner.next("\\-");
             return Term.OpCode.MINUS;
         }
         return Term.OpCode.NONE;
     }
 
     private Expression parseTerm() {
-        return new Term(Term.OpCode.NONE, new Factor(), new Factor());
+        Expression a = parseFactor();
+        if (isEnd) {
+            return a;
+        }
+        Term.OpCode op = parseTermOperator();
+        if (op != Term.OpCode.NONE) {
+            Expression b = parseFactor();
+            return new Term(op, a, b);
+        }
+        return a;
+    }
+
+    private Expression parseFactor() {
+        Expression a = parsePrimary();
+        if (isEnd) {
+            return a;
+        }
+        Factor.OpCode op = parseFactorOperator();
+        if (op != Factor.OpCode.NONE) {
+            Expression b = parsePrimary();
+            return new Factor(op, a, b);
+        }
+        return a;
+    }
+
+    private Expression parsePrimary() {
+        if (scanner.hasNextInt())
+            return new Integer(scanner.nextInt());
+        throw new IllegalStateException();
+    }
+
+    private Factor.OpCode parseFactorOperator() {
+        if (scanner.hasNext("\\*")) {
+            scanner.next("\\*");
+            return Factor.OpCode.MUL;
+        }
+        if (scanner.hasNext("/")) {
+            scanner.next("/");
+            return Factor.OpCode.DIV;
+        }
+        return Factor.OpCode.NONE;
     }
 }

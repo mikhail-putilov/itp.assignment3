@@ -13,6 +13,7 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.ws.FaultAction;
 import java.io.StringWriter;
 
 /**
@@ -45,6 +46,23 @@ public class PrettyPrinter {
             parent.appendChild(element);
             add(doc, element, relationExpression.left);
             add(doc, element, relationExpression.right);
+        } else if (expression instanceof Term) {
+            Term termExpression = (Term) expression;
+            element = doc.createElement(termExpression.opCode.name());
+            parent.appendChild(element);
+            add(doc, element, termExpression.left);
+            add(doc, element, termExpression.right);
+        } else if (expression instanceof Integer) {
+            Integer integerExpression = (Integer) expression;
+            element = doc.createElement("int");
+            element.setTextContent(integerExpression.getValue());
+            parent.appendChild(element);
+        } else if (expression instanceof Factor) {
+            Factor factorExpression = (Factor) expression;
+            element = doc.createElement(factorExpression.opCode.name());
+            add(doc, element, factorExpression.left);
+            add(doc, element, factorExpression.right);
+            parent.appendChild(element);
         }
     }
 

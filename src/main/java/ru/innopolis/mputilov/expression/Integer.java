@@ -6,4 +6,11 @@ package ru.innopolis.mputilov.expression;
 public class Integer extends Primary {
     private long value;
 
+    public Integer(long value) {
+        this.value = value;
+    }
+
+    public String getValue() {
+        return String.valueOf(value);
+    }
 }
