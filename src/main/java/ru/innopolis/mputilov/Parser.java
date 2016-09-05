@@ -2,26 +2,25 @@ package ru.innopolis.mputilov;
 
 import ru.innopolis.mputilov.expression.*;
 import ru.innopolis.mputilov.expression.Integer;
-
-import java.util.Scanner;
+import ru.innopolis.mputilov.token.Tokenizer;
 
 /**
  * Created by mputilov on 04.09.16.
  */
 public class Parser {
 
-    Scanner scanner;
-    private boolean isEnd;
+    private final Tokenizer iterator;
 
-    public Parser(String s) {
-        scanner = new Scanner(s);
+    public Parser(String input) {
+        iterator = new Tokenizer(input);
     }
 
     public static void main(String[] args) {
-        String rawExpression = "1 + 3 + 2 and 4";
+        String rawExpression = "1 + 2     + 4 -5 > 3 and (3 > 5)";
         Expression expression = new Parser(rawExpression).parse();
         new PrettyPrinter().print(expression);
     }
+
 
     public Expression parse() {
         return parseLogical();
@@ -38,11 +37,17 @@ public class Parser {
     }
 
     private Logical.OpCode parseLogOperator() {
-        if (scanner.hasNext("and")) {
-            return Logical.OpCode.AND;
-        }
-        if (scanner.hasNext("or")) {
-            return Logical.OpCode.OR;
+        if (iterator.hasNext()) {
+            switch (iterator.peek()) {
+                case "and":
+                    iterator.next();
+                    return Logical.OpCode.AND;
+                case "or":
+                    iterator.next();
+                    return Logical.OpCode.OR;
+                default:
+                    break;
+            }
         }
         return Logical.OpCode.NONE;
     }
@@ -58,23 +63,33 @@ public class Parser {
     }
 
     private Relation.OpCode parseRelationOperator() {
-        if (scanner.hasNext("<")) {
-            return Relation.OpCode.LESS;
-        }
-        if (scanner.hasNext(">")) {
-            return Relation.OpCode.GREATER;
+        if (iterator.hasNext()) {
+            switch (iterator.peek()) {
+                case "<":
+                    iterator.next();
+                    return Relation.OpCode.LESS;
+                case ">":
+                    iterator.next();
+                    return Relation.OpCode.GREATER;
+                default:
+                    break;
+            }
         }
         return Relation.OpCode.NONE;
     }
 
     private Term.OpCode parseTermOperator() {
-        if (scanner.hasNext("\\+")) {
-            scanner.next("\\+");
-            return Term.OpCode.PLUS;
-        }
-        if (scanner.hasNext("\\-")) {
-            scanner.next("\\-");
-            return Term.OpCode.MINUS;
+        if (iterator.hasNext()) {
+            switch (iterator.peek()) {
+                case "+":
+                    iterator.next();
+                    return Term.OpCode.PLUS;
+                case "-":
+                    iterator.next();
+                    return Term.OpCode.MINUS;
+                default:
+                    break;
+            }
         }
         return Term.OpCode.NONE;
     }
@@ -100,32 +115,34 @@ public class Parser {
     }
 
     private Expression parsePrimary() {
-        if (scanner.hasNextInt()) {
-            return new Integer(scanner.nextInt());
+        if (iterator.hasNext()) {
+            String token = iterator.next();
+            switch (token) {
+                case "(":
+                    iterator.next();
+                    iterator.next();
+                    iterator.next();
+                    iterator.next();
+                    return new Parenthesized(new Parser("1 < 2").parse());
+                default:
+                    return new Integer(token);
+            }
         }
-        if (scanner.hasNext("\\(")) {
-            scanner.next("\\(");
-            scanner.hasNextInt();
-            scanner.nextInt();
-            scanner.hasNext("\\+");
-            scanner.next("\\+");
-            scanner.hasNextInt();
-            scanner.nextInt();
-            scanner.hasNext("\\)");
-            scanner.next("\\)");
-            return new Parser("1 + 2").parse();
-        }
-        throw new IllegalStateException("asd");
+        throw new RuntimeException("sad");
     }
 
     private Factor.OpCode parseFactorOperator() {
-        if (scanner.hasNext("\\*")) {
-            scanner.next("\\*");
-            return Factor.OpCode.MUL;
-        }
-        if (scanner.hasNext("/")) {
-            scanner.next("/");
-            return Factor.OpCode.DIV;
+        if (iterator.hasNext()) {
+            switch (iterator.peek()) {
+                case "*":
+                    iterator.next();
+                    return Factor.OpCode.MUL;
+                case "/":
+                    iterator.next();
+                    return Factor.OpCode.DIV;
+                default:
+                    break;
+            }
         }
         return Factor.OpCode.NONE;
     }

@@ -13,13 +13,15 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import javax.xml.ws.FaultAction;
 import java.io.StringWriter;
 
 /**
  * Created by mputilov on 04.09.16.
  */
 public class PrettyPrinter {
+
+    public static final String INT = "INT";
+    public static final String PARENTHESIS = "PARENTHESIS";
 
     private static Document createDocument() {
         try {
@@ -54,7 +56,7 @@ public class PrettyPrinter {
             add(doc, element, termExpression.right);
         } else if (expression instanceof Integer) {
             Integer integerExpression = (Integer) expression;
-            element = doc.createElement("int");
+            element = doc.createElement(INT);
             element.setTextContent(integerExpression.getValue());
             parent.appendChild(element);
         } else if (expression instanceof Factor) {
@@ -63,21 +65,11 @@ public class PrettyPrinter {
             add(doc, element, factorExpression.left);
             add(doc, element, factorExpression.right);
             parent.appendChild(element);
-        }
-    }
-
-    private String encodeOperator(String expression) {
-        switch (expression) {
-            case "+":
-                return "plus";
-            case "-":
-                return "minus";
-            case "/":
-                return "divide";
-            case "*":
-                return "multiply";
-            default:
-                throw new IllegalStateException("");
+        } else if (expression instanceof Parenthesized) {
+            Parenthesized parenthesized = (Parenthesized) expression;
+            element = doc.createElement(PARENTHESIS);
+            add(doc, element, parenthesized.getExpression());
+            parent.appendChild(element);
         }
     }
 

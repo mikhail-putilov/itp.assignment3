@@ -15,5 +15,6 @@ public class Logical extends Expression {
         this.left = left;
         this.right = right;
     }
+
     public enum OpCode {AND, OR, XOR, NONE}
 }

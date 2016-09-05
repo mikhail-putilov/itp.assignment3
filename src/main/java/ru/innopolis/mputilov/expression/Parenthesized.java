@@ -6,4 +6,11 @@ package ru.innopolis.mputilov.expression;
 public class Parenthesized extends Primary {
     private Expression expression;
 
+    public Parenthesized(Expression expression) {
+        this.expression = expression;
+    }
+
+    public Expression getExpression() {
+        return expression;
+    }
 }

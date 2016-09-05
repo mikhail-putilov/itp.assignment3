@@ -6,8 +6,8 @@ package ru.innopolis.mputilov.expression;
 public class Integer extends Primary {
     private long value;
 
-    public Integer(long value) {
-        this.value = value;
+    public Integer(String number) {
+        value = Long.valueOf(number);
     }
 
     public String getValue() {
