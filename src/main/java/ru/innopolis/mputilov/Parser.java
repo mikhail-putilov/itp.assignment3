@@ -11,16 +11,14 @@ import java.util.Scanner;
 public class Parser {
 
     Scanner scanner;
-    private String input;
     private boolean isEnd;
 
     public Parser(String s) {
-        input = s;
         scanner = new Scanner(s);
     }
 
     public static void main(String[] args) {
-        String rawExpression = "1 + 2 * 3";
+        String rawExpression = "1 + 3 + 2 and 4";
         Expression expression = new Parser(rawExpression).parse();
         new PrettyPrinter().print(expression);
     }
@@ -31,12 +29,9 @@ public class Parser {
 
     private Expression parseLogical() {
         Expression a = parseRelation();
-        if (isEnd) {
-            return a;
-        }
         Logical.OpCode op = parseLogOperator();
         if (op != Logical.OpCode.NONE) {
-            Expression b = parseRelation();
+            Expression b = parseLogical();
             return new Logical(op, a, b);
         }
         return a;
@@ -54,9 +49,6 @@ public class Parser {
 
     private Expression parseRelation() {
         Expression a = parseTerm();
-        if (isEnd) {
-            return a;
-        }
         Relation.OpCode op = parseRelationOperator();
         if (op != Relation.OpCode.NONE) {
             Expression b = parseTerm();
@@ -87,14 +79,11 @@ public class Parser {
         return Term.OpCode.NONE;
     }
 
-    private Expression parseTerm() {
+    private Expression parseTerm() { //"1 + 2 + 3"
         Expression a = parseFactor();
-        if (isEnd) {
-            return a;
-        }
         Term.OpCode op = parseTermOperator();
         if (op != Term.OpCode.NONE) {
-            Expression b = parseFactor();
+            Expression b = parseTerm();
             return new Term(op, a, b);
         }
         return a;
@@ -102,21 +91,31 @@ public class Parser {
 
     private Expression parseFactor() {
         Expression a = parsePrimary();
-        if (isEnd) {
-            return a;
-        }
         Factor.OpCode op = parseFactorOperator();
         if (op != Factor.OpCode.NONE) {
-            Expression b = parsePrimary();
+            Expression b = parseFactor();
             return new Factor(op, a, b);
         }
         return a;
     }
 
     private Expression parsePrimary() {
-        if (scanner.hasNextInt())
+        if (scanner.hasNextInt()) {
             return new Integer(scanner.nextInt());
-        throw new IllegalStateException();
+        }
+        if (scanner.hasNext("\\(")) {
+            scanner.next("\\(");
+            scanner.hasNextInt();
+            scanner.nextInt();
+            scanner.hasNext("\\+");
+            scanner.next("\\+");
+            scanner.hasNextInt();
+            scanner.nextInt();
+            scanner.hasNext("\\)");
+            scanner.next("\\)");
+            return new Parser("1 + 2").parse();
+        }
+        throw new IllegalStateException("asd");
     }
 
     private Factor.OpCode parseFactorOperator() {
