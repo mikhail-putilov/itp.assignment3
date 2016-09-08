@@ -19,63 +19,8 @@ import java.io.StringWriter;
  * Created by mputilov on 04.09.16.
  */
 public class PrettyPrinter {
-
-    public static final String INT = "INT";
-    public static final String PARENTHESIS = "PARENTHESIS";
-
-    private static Document createDocument() {
-        try {
-            DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-            return docBuilder.newDocument();
-        } catch (ParserConfigurationException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private void add(Document doc, Node parent, Expression expression) {
-        if (expression == null) return;
-        Element element;
-        if (expression instanceof Logical) {
-            Logical logicalExpression = (Logical) expression;
-            element = doc.createElement(logicalExpression.opCode.name());
-            parent.appendChild(element);
-            add(doc, element, logicalExpression.left);
-            add(doc, element, logicalExpression.right);
-        } else if (expression instanceof Relation) {
-            Relation relationExpression = (Relation) expression;
-            element = doc.createElement(relationExpression.opCode.name());
-            parent.appendChild(element);
-            add(doc, element, relationExpression.left);
-            add(doc, element, relationExpression.right);
-        } else if (expression instanceof Term) {
-            Term termExpression = (Term) expression;
-            element = doc.createElement(termExpression.opCode.name());
-            parent.appendChild(element);
-            add(doc, element, termExpression.left);
-            add(doc, element, termExpression.right);
-        } else if (expression instanceof Integer) {
-            Integer integerExpression = (Integer) expression;
-            element = doc.createElement(INT);
-            element.setTextContent(integerExpression.getValue());
-            parent.appendChild(element);
-        } else if (expression instanceof Factor) {
-            Factor factorExpression = (Factor) expression;
-            element = doc.createElement(factorExpression.opCode.name());
-            add(doc, element, factorExpression.left);
-            add(doc, element, factorExpression.right);
-            parent.appendChild(element);
-        } else if (expression instanceof Parenthesized) {
-            Parenthesized parenthesized = (Parenthesized) expression;
-            element = doc.createElement(PARENTHESIS);
-            add(doc, element, parenthesized.getExpression());
-            parent.appendChild(element);
-        }
-    }
-
     public void print(Expression expression) {
-        Document doc = createDocument();
-        add(doc, doc, expression);
+        Document doc = expression.toXml();
 
         try {
             Transformer transformer = null;
