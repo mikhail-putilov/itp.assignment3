@@ -28,5 +28,19 @@ public class Logical extends Expression {
         right.recursiveToXml(doc, element);
     }
 
+    @Override
+    public String evaluate() {
+        Boolean leftEvaluated = Boolean.valueOf(left.evaluate());
+        Boolean rightEvaluated = Boolean.valueOf(right.evaluate());
+        switch (opCode) {
+            case AND:
+                return String.valueOf(leftEvaluated && rightEvaluated);
+            case OR:
+                return String.valueOf(leftEvaluated || rightEvaluated);
+            default:
+                return null;
+        }
+    }
+
     public enum OpCode {AND, OR, XOR, NONE}
 }

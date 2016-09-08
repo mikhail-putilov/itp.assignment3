@@ -26,5 +26,19 @@ public class Relation extends Expression {
         right.recursiveToXml(doc, element);
     }
 
+    @Override
+    public String evaluate() {
+        java.lang.Integer leftEvaluated = java.lang.Integer.valueOf(left.evaluate());
+        java.lang.Integer rightEvaluated = java.lang.Integer.valueOf(right.evaluate());
+        switch (opCode) {
+            case LESS:
+                return String.valueOf(leftEvaluated < rightEvaluated);
+            case GREATER:
+                return String.valueOf(leftEvaluated > rightEvaluated);
+            default:
+                return null;
+        }
+    }
+
     public enum OpCode {LESS, LESS_EQ, GREATER, GREATER_EQ, EQUAL, NOT_EQ, NONE}
 }
