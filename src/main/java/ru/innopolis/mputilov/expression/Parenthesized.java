@@ -26,4 +26,9 @@ public class Parenthesized extends Primary {
         parent.appendChild(element);
         expression.recursiveToXml(doc, element);
     }
+
+    @Override
+    public String evaluate() {
+        return expression.evaluate();
+    }
 }

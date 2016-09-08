@@ -29,4 +29,6 @@ public abstract class Expression {
     }
 
     protected abstract void recursiveToXml(Document doc, Node parent);
+
+    public abstract String evaluate();
 }

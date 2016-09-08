@@ -26,5 +26,19 @@ public class Term extends Expression {
         right.recursiveToXml(doc, element);
     }
 
+    @Override
+    public String evaluate() {
+        java.lang.Integer leftEvaluated = java.lang.Integer.valueOf(left.evaluate());
+        java.lang.Integer rightEvaluated = java.lang.Integer.valueOf(right.evaluate());
+        switch (opCode) {
+            case PLUS:
+                return String.valueOf(leftEvaluated + rightEvaluated);
+            case MINUS:
+                return String.valueOf(leftEvaluated - rightEvaluated);
+            default:
+                return null;
+        }
+    }
+
     public enum OpCode {PLUS, MINUS, NONE}
 }

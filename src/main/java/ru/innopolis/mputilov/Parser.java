@@ -21,6 +21,8 @@ public class Parser {
         String rawExpression = "1 + 2     + 4 -5 > 3 and (3 > (7 + 8))";
         Expression expression = new Parser(rawExpression).parse();
         new PrettyPrinter().print(expression);
+
+        System.out.println(new Parser("1 + 2 + 3 - 3 < 2").parse().evaluate());
     }
 
 

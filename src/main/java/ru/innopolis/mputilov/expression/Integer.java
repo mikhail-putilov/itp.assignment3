@@ -25,4 +25,9 @@ public class Integer extends Primary {
         element.setTextContent(getValue());
         parent.appendChild(element);
     }
+
+    @Override
+    public String evaluate() {
+        return String.valueOf(value);
+    }
 }
