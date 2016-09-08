@@ -11,8 +11,6 @@ public class Tokenizer implements Iterator<String> {
     private int currentIndex = 0;
     private String toBeTokenized;
     private State state;
-    private String debugString;
-    private String peek;
 
 
     public Tokenizer(String toBeTokenized) {
@@ -49,7 +47,7 @@ public class Tokenizer implements Iterator<String> {
         } else {
             if (Character.isAlphabetic(currentChar)) {
                 state = State.WORD;
-            } else if (Character.isDigit(currentChar)){
+            } else if (Character.isDigit(currentChar)) {
                 state = State.INTEGER;
             }
         }
@@ -74,7 +72,6 @@ public class Tokenizer implements Iterator<String> {
     }
 
     private String readNextToken() {
-        debugString = toBeTokenized.substring(currentIndex);
         StringBuilder parsedTokenBuilder = new StringBuilder();
         //best guess:
         char currentChar = toBeTokenized.charAt(currentIndex);
@@ -84,7 +81,7 @@ public class Tokenizer implements Iterator<String> {
         } else {
             if (Character.isAlphabetic(currentChar)) {
                 state = State.WORD;
-            } else if (Character.isDigit(currentChar)){
+            } else if (Character.isDigit(currentChar)) {
                 state = State.INTEGER;
             }
         }
